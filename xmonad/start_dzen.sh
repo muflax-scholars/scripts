@@ -27,6 +27,10 @@ case $HOSTNAME in
     WIDTH="1281"
     HEIGHT="800"
     ;;
+  scabeiathrax)
+    WIDTH="1281"
+    HEIGHT="800"
+    ;;
   *)
     echo "unknown host: aborting"
     exit 1
