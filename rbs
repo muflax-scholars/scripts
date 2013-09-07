@@ -45,8 +45,8 @@ if [ $? -eq 0 ]; then
 
   echo "copy bup packs..."
   branch="$(hostname)-$(date $DATE_FORMAT)"
-  ionice -3 bup save -n $branch $HOME -r $BACKUP_DIR/home/
-}
+  ionice -c3 bup save -n $branch $HOME -r $BACKUP_DIR/home/
+fi
 
 # remove lockfile
 rm -f /tmp/rbs.lock
