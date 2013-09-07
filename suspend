@@ -16,15 +16,15 @@ else
 fi
 
 # check if backup process is running
-source $HOME/src/scripts/rbs
-if [[ $(is_locked) == "locked" ]]; then
-  echo -n "backup is in process right now, waiting a bit"
-fi
+# source $HOME/src/scripts/rbs
+# if [[ $(is_locked) == "locked" ]]; then
+#   echo -n "backup is in process right now, waiting a bit"
+# fi
 
-while [[ $(is_locked) == "locked" ]]; do
-  echo -n "."
-  sleep 10
-done
+# while [[ $(is_locked) == "locked" ]]; do
+#   echo -n "."
+#   sleep 10
+# done
 
 # sync drives in case of crash
 sync
