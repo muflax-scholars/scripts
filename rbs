@@ -1,19 +1,19 @@
 #!/bin/zsh
+# Copyright muflax <mail@muflax.com>, 2013
+# License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
-BACKUP_DIR="/mnt/backup"
-DATE_FORMAT="+%Y-%m-%d_%H:%M:%S"
-CUTOFF="3 months ago"
-TAG="manual"
-TARGETS=("/var" "/boot" "/" "/usr" "/usr/portage" "/home")
+source ~/.zsh/env.sh
+source ~/.zsh/path.sh
 
-alias LOCK="mount -o remount,ro $BACKUP_DIR"
-alias UNLOCK="mount -o remount,rw $BACKUP_DIR"
+BACKUP_DIR="/mnt/nfs/backup"
+BACKUP_MACHINE="pleonasty"
+DATE_FORMAT="+%Y-%m-%d"
 
 function is_locked() {
   # check for lockfile
-  if [[ -f $BACKUP_DIR/rbs.lock ]]; then
+  if [[ -f /tmp/rbs.lock ]]; then
     # process already running?
-    if [[ "$(ps -p $(cat $BACKUP_DIR/rbs.lock) | wc -l)" -gt 1 ]]; then
+    if [[ "$(ps -p $(cat /tmp/rbs.lock) | wc -l)" -gt 1 ]]; then
       echo "locked"
       return
     fi
@@ -21,90 +21,32 @@ function is_locked() {
   echo "unlocked"
 }
 
-function backup() {
-  if [[ $(is_locked) == "locked" ]]; then
-    echo "process already running, aborting..."
-    exit 1
-  fi
+if [[ $(is_locked) == "locked" ]]; then
+  echo "process already running, aborting..."
+  exit 1
+fi
 
-  # begin writing to drive
-  UNLOCK
-  
-  # create lockfile
-  rm -f $BACKUP_DIR/rbs.lock
-  echo $$ > $BACKUP_DIR/rbs.lock
+# create lockfile
+rm -f /tmp/rbs.lock
+echo $$ > /tmp/rbs.lock
+
+echo "update local bup index..."
+cd $HOME # do it here so that the bupignore paths work without rewriting
+ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore
+
+# check if backup machine is available
+ping -w 5 -c 1 $BACKUP_MACHINE
+if [ $? -eq 0 ]; then
+  # start backup
   
   echo "saving daily pigs..."
-  mv /home/amon/pigs/daily/* $BACKUP_DIR/daily_pigs/
+  ionice -c3 /bin/mv $HOME/pigs/daily/* $BACKUP_DIR/daily_pigs/
   echo "pigs saved."
-  
-  for origin in $TARGETS
-  do
-    if [[ $origin != "/" ]] then
-      # replace all slashes except the first one by underscore
-      target="${origin[1]}${origin[2,-1]:gs,/,_,}"
-    else
-      target="root"
-    fi
 
-    target_dir="$BACKUP_DIR/$target/$TAG/"
-    current="$BACKUP_DIR/$target/current"
-
-    echo "backing up $origin to $target_dir..."
-
-    echo "removing old snapshots..."
-    cutoff_date=$(date --date=$CUTOFF $DATE_FORMAT)
-
-    for cutoff_dir in $(/usr/bin/ruby19 << RUBY
-      pattern =  /
-                  (?<date>
-                      (?<year>\d+)
-                      - 
-                      (?<month>\d+)
-                      -
-                      (?<day>\d+)
-                      _
-                      (?<hour>\d+)
-                      :
-                      (?<min>\d+)
-                      :
-                      (?<sec>\d+)
-                  )
-                  (_incomplete)?
-                  /x
-
-      c = "${cutoff_date}".match(pattern)
-
-      Dir["${target_dir}/*"].each do |dir| 
-        if m = dir.match(pattern)
-          if m["date"] < c["date"]
-            puts dir
-          end
-        end
-      end
-RUBY)
-    do
-      echo "deleting $cutoff_dir"
-      rm -rf --one-file-system $cutoff_dir
-    done
-
-    echo "starting backup..."
-    date=$(date $DATE_FORMAT)
-    mkdir -p $target_dir
-
-    rsync -xaP --delete --delete-excluded \
-      --link-dest=$current \
-      $origin/ $target_dir/${date}_incomplete \
-      \
-      && mv $target_dir/${date}_incomplete $target_dir/$date \
-      && rm -f $current \
-      && ln -s $target_dir/$date $current
-    echo "backup complete at $(date)"
-  done
-    
-  # remove lockfile
-  rm -f $BACKUP_DIR/rbs.lock
-
-  # lock drive again
-  LOCK
+  echo "copy bup packs..."
+  branch="$(hostname)-$(date $DATE_FORMAT)"
+  ionice -3 bup save -n $branch $HOME -r $BACKUP_DIR/home/
 }
+
+# remove lockfile
+rm -f /tmp/rbs.lock
