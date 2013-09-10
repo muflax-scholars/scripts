@@ -31,12 +31,9 @@ status() {
   echo "$dzen_number P$(cpu_hogs)"
   dzen_number+=1
 
-  # laptop specific
-  if [[ $hostname == "nyarlathotep" || $hostname == "typhus" ]] then
-    # battery status
-    echo "$dzen_number B ${$(acpi)[(w)3,-1]}"
-    dzen_number+=1
-  fi
+  # battery status
+  echo "$dzen_number B ${$(acpi)[(w)3,-1]}"
+  dzen_number+=1
 
   # current load
   load=($(cat /proc/loadavg))
