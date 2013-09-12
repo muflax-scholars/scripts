@@ -3,7 +3,7 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 # grab all preferred data and drop the rest
-dirs=(~/books ~/games/install ~/音/ ~/テレビ/)
+dirs=(~/txt ~/games/install ~/音/ ~/テレビ/)
 
 for dir in $dirs; do
   cd $dir

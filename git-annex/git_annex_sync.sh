@@ -3,7 +3,7 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 # sync all git-annex repos
-dirs=(~/books ~/音/ ~/テレビ/ ~/games/install)
+dirs=(~/txt ~/音/ ~/テレビ/ ~/games/install)
 
 for dir in $dirs; do
   cd $dir && git-annex add && git-annex sync
