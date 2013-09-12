@@ -6,7 +6,7 @@ source ~/.zsh/env.sh
 source ~/.zsh/path.sh
 
 BACKUP_DIR="/mnt/nfs/backup"
-BACKUP_MACHINE="pleonasty"
+BACKUP_MACHINE="pleonasty.local"
 DATE_FORMAT="+%Y-%m-%d"
 
 function is_locked() {
