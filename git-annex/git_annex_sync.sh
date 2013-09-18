@@ -6,5 +6,6 @@
 dirs=(~/txt ~/音/ ~/テレビ/ ~/games/install)
 
 for dir in $dirs; do
+  echo $dir...
   cd $dir && git-annex add && git-annex sync
 done
