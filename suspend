@@ -37,6 +37,9 @@ if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]] then
   modprobe -r iwl3945 || exit 1
 fi
 
+# lock screen
+slock &!
+
 # actual suspend
 if [[ $TIME -gt 0 ]] then
   rtcwake -m mem -s $TIME
