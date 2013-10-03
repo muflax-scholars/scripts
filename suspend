@@ -37,6 +37,12 @@ if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]] then
   modprobe -r iwl3945 || exit 1
 fi
 
+# remember backlight level
+if [[ $(hostname) == "scabeiathrax" ]] then
+  light=$(cat /sys/class/backlight/nvidia_backlight/brightness)
+fi
+
+
 # lock screen
 slock &!
 
@@ -53,6 +59,11 @@ fi
 if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]] then
   # wlan
   modprobe iwl3945 || exit 1
+fi
+
+# set backlight level
+if [[ $(hostname) == "scabeiathrax" ]] then
+  echo $light > /sys/class/backlight/nvidia_backlight/brightness
 fi
 
 # daemons
