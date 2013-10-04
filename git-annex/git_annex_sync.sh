@@ -3,7 +3,7 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 # sync all git-annex repos
-dirs=(~/txt ~/音/ ~/テレビ/ ~/games/install)
+dirs=(~/txt ~/ongaku/ ~/telebi/ ~/games/install)
 
 for dir in $dirs; do
   echo $dir...
