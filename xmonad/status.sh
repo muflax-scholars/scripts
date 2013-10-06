@@ -32,7 +32,7 @@ status() {
   dzen_number+=1
 
   # battery status
-  echo "$dzen_number B ${$(acpi)[(w)3,-1]}"
+  echo "$dzen_number B ${$(acpi)[(w)4,-1]}"
   dzen_number+=1
 
   # current load
@@ -51,8 +51,9 @@ status() {
   dzen_number+=1
 
   # current date
-  us_time=$(TZ="America/Los_Angeles" date "+%H時")
-  local_time=$(date "+%d日(%a) [${us_time}] %H時%M分%S秒")
+  us_time=$(TZ="America/Los_Angeles" date "+u:%H")
+  mom_time=$(TZ="Europe/Berlin" date "+m:%H")
+  local_time=$(date "+%a %d [${us_time}|${mom_time}] %H時%M分%S秒")
   echo "$dzen_number $local_time"
   dzen_number+=1
 }
