@@ -1,11 +1,7 @@
 #!/bin/zsh
 
 eclient=$(which emacsclient)
-if [[ -e $(which emacs-24) ]]; then
-  emacs=$(which emacs-24)
-else
-  emacs=$(which emacs)
-fi
+emacs=$(which emacs-24)
 vim=$(which vim)
 
 if [[ ${0:t} == "emacs-gui" ]]; then
@@ -19,7 +15,7 @@ fi
 # use the daemon if it exists, but fall back on a stand-alone emacs, or vim/vi on crappy systems
 if [[ -e $eclient ]]; then
   if [[ -e $emacs ]]; then
-    emacsclient $argclient --alternate-editor="$emacs $argemacs" $*
+    emacsclient $argclient --alternate-editor="emacs-24 $argemacs" $*
   else
     if [[ -e $vim ]]; then
       emacsclient $argclient --alternate-editor='vim' $*
@@ -29,7 +25,7 @@ if [[ -e $eclient ]]; then
   fi
 else
   if [[ -e $emacs ]]; then
-    $emacs $argemacs $* &!
+    emacs-24 $argemacs $* &!
   else
     if [[ -e $vim ]]; then
       vim $*
