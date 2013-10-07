@@ -47,7 +47,10 @@ status() {
 
   # volume
   mixer="Master"
-  echo "$dzen_number V $(amixer get $mixer | grep -oP '\d+%' | tail -1)"
+  volume=$(amixer get $mixer | grep -oP '\d+%' | tail -1)
+  headphone_mixer="Headphone"
+  headphone=" $(amixer get $headphone_mixer | grep -oP '\[(on|off)\]' | tail -1)"
+  echo "$dzen_number V ${volume}${headphone}"
   dzen_number+=1
 
   # current date
