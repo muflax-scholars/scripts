@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 eclient=$(which emacsclient)
-emacs=$(which emacs)
+emacs=$(which emacs-24)
 vim=$(which vim)
 
 if [[ ${0:t} == "emacs-gui" ]]; then
