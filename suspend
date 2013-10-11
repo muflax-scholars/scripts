@@ -44,7 +44,7 @@ fi
 
 
 # lock screen
-slock &!
+DISPLAY=:0.0 slock &!
 
 # actual suspend
 if [[ $TIME -gt 0 ]] then
