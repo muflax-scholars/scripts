@@ -22,10 +22,14 @@ if id
     if line =~ /Device Enabled/
       status = line[/:\s+(\d)/, 1]
       case status
-      when "0"
+      when "0" # enable cursor
         system "xinput enable #{id}"
-      when "1"
+        system "xsetroot -cursor_name left_ptr"
+      when "1" # disable cursor
         system "xinput disable #{id}"
+        height = `xdpyinfo`[/dimensions:\s+\d+x(\d+)/, 1]
+        system "xsetroot -cursor #{__dir__}/invisible_cursor.xbm #{__dir__}/invisible_cursor.xbm"
+        system "swarp 0 #{height}"
       else
         puts "weird device state: #{status}"
       end
