@@ -27,7 +27,6 @@ if id
         system "xsetroot -cursor_name left_ptr"
       when "1" # disable cursor
         system "xinput disable #{id}"
-        height = `xdpyinfo`[/dimensions:\s+\d+x(\d+)/, 1]
         system "xsetroot -cursor #{__dir__}/invisible_cursor.xbm #{__dir__}/invisible_cursor.xbm"
       else
         puts "weird device state: #{status}"
