@@ -1,9 +1,0 @@
-#!/bin/zsh
-# Copyright muflax <mail@muflax.com>, 2011
-# License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
-
-echo "setting up connection..."
-jnc -n kit
-echo "done?"; read
-jnc stop
-sudo /etc/init.d/net.eth0 restart
