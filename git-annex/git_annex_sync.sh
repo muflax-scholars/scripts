@@ -3,9 +3,9 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 # sync all git-annex repos
-dirs=(~/txt ~/ongaku/ ~/telebi/ ~/games/install)
-
-for dir in $dirs; do
+for dir in $(cat ~/.git_annex_dirs); do
   echo $dir...
-  cd $dir && git-annex add && git-annex sync
+  cd $dir
+  git-annex add
+  git-annex sync
 done
