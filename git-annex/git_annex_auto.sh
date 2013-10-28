@@ -5,6 +5,6 @@
 # grab all preferred data
 for dir in $(cat ~/.git_annex_dirs); do
   echo $dir...
-  cd $dir
+  cd $HOME/$dir
   git-annex get --auto
 done

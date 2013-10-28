@@ -5,7 +5,7 @@
 # sync all git-annex repos
 for dir in $(cat ~/.git_annex_dirs); do
   echo $dir...
-  cd $dir
+  cd $HOME/$dir
   git-annex add
   git-annex sync
 done
