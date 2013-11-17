@@ -6,6 +6,6 @@
 for dir in $(cat ~/.git_annex_dirs); do
   echo $dir...
   cd $HOME/$dir
-  git fsck && git gc --aggressive && git prune && \
+  git fsck && git gc && git prune && \
     git-annex unused && git-annex dropunused 1-10000 --force
 done
