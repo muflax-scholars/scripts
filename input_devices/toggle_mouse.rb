@@ -4,35 +4,43 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 devices = [
-           "bcm5974",
-           "Synaptics TouchPad",
-          ]
+  "bcm5974",
+  "Synaptics TouchPad",
+  "Razer Razer DeathAdder"
+]
 
-id = nil
+ids = []
 
 `xinput`.split("\n").each do |line|
   if line =~ /(#{devices.join("|")})/
-    id = line[/id=(\d+)/, 1]
-    break
+    ids << line[/id=(\d+)/, 1]
   end
 end
 
-if id
+if ids.empty?
+  puts "couldn't find any mice to disable"
+  exit 1
+end
+
+status = nil
+
+ids.each do |id|
   `xinput list-props #{id}`.split("\n").each do |line|
     if line =~ /Device Enabled/
-      status = line[/:\s+(\d)/, 1]
-      case status
-      when "0" # enable cursor
-        system "xinput enable #{id}"
-        system "xsetroot -cursor_name left_ptr"
-      when "1" # disable cursor
-        system "xinput disable #{id}"
-        system "xsetroot -cursor #{__dir__}/invisible_cursor.xbm #{__dir__}/invisible_cursor.xbm"
-      else
-        puts "weird device state: #{status}"
-      end
+
+      # the first device in the list defines the status of all other devices, so that running the script always leaves all mice in the *same* state
+      status ||= line[/:\s+(\d)/, 1]
     end
   end
-else
-  puts "couldn't find any trackpad to disable"
+
+  case status
+  when "0" # enable cursor
+    system "xinput enable #{id}"
+    system "xsetroot -cursor_name left_ptr"
+  when "1" # disable cursor
+    system "xinput disable #{id}"
+    system "xsetroot -cursor #{__dir__}/invisible_cursor.xbm #{__dir__}/invisible_cursor.xbm"
+  else
+    puts "weird device state: #{status}"
+  end
 end
