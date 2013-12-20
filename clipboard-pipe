@@ -11,6 +11,9 @@ Commands = [
   "sort -u | uniq",
 ].join("\n")
 
+# get currently active window
+Window = %x{xdotool getwindowfocus}.strip
+
 def read_command
   dmenu_opts="-b -i -fn '-mplus-gothic-medium-r*12' -nb '#000000' -nf '#FFFFFF' -sb '#ff8c00' -sf '#000000'"
 
@@ -20,18 +23,7 @@ def read_command
 end
 
 def send_key key
-  if key.include? "+"
-    keys = key.split("+")
-    modifiers, key = keys[0..-2], keys[-1]
-
-    cmds = []
-    modifiers.each {|mod| cmds << "'keydown #{mod}'"}
-    cmds << "'key #{key}'"
-    modifiers.each {|mod| cmds << "'keyup #{mod}'"}
-    system "xte #{cmds.join(" ")}"
-  else
-    system "xte 'key #{key}'"
-  end
+  system "xdotool key --window #{Window} '#{key}'"
 end
 
 opts = Trollop::options do
@@ -49,12 +41,12 @@ end
 # make sure the selection gets copied
 if opts[:paste]
   # clear clipboard first
-  system "echo -n | xclip -i"
+  system "echo -n | xclip -i -sel clipboard"
   send_key "Control_L+c"
 end
 
 # read the selection
-selection = %x{xclip -o} || ""
+selection = %x{xclip -o -sel clipboard} || ""
 if selection.empty? and opts[:paste]
   puts "no input, aborting..."
   exit 1
@@ -69,8 +61,8 @@ IO.popen(command, "w+") do |cmd|
 end
 
 # put it into the clipboard (and clear it first so Klipper doesn't interfere)
-system "echo -n | xclip -i"
-IO.popen("xclip -i", "w+") do |cmd|
+system "echo -n | xclip -i -sel clipboard"
+IO.popen("xclip -i -sel clipboard", "w+") do |cmd|
   cmd << output
   cmd.close_write
 end
