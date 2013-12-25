@@ -31,6 +31,7 @@ Trollop::die "no command specified" if ARGV.empty?
 # wait either for the specified time, or 1 second if not in --changes mode
 wait = opts[:n] || (opts[:changes].empty? ? 1 : 0)
 
+
 def watch files
   notifier = INotify::Notifier.new
 
@@ -39,6 +40,8 @@ def watch files
   end
 
   notifier.process
+
+  notifier.close
 end
 
 begin
@@ -59,4 +62,5 @@ begin
 
     sleep(wait)
   end
+rescue Interrupt
 end
