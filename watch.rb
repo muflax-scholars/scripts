@@ -60,6 +60,8 @@ begin
       system "notify-send '#{opts[:notify]}'"
     end
 
+    puts "[WAITING]..."
+
     sleep(wait)
   end
 rescue Interrupt
