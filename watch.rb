@@ -51,12 +51,11 @@ begin
     end
 
     system "zsh -l -c '#{ARGV.join(" ")}'"
+    puts "[WAITING]..."
 
     if not opts[:changes].empty?
       watch opts[:changes]
     end
-
-    puts "[WAITING]..."
 
     if opts[:notify]
       system "notify-send '#{opts[:notify]}'"
