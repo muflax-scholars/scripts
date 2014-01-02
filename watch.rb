@@ -29,7 +29,7 @@ end
 Trollop::die "no command specified" if ARGV.empty?
 
 # wait either for the specified time, or 1 second if not in --changes mode
-wait = opts[:n] || (opts[:changes].empty? ? 1 : 0)
+wait = opts[:wait] || (opts[:changes].empty? ? 1 : 0)
 
 
 def watch files
