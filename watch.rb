@@ -56,11 +56,11 @@ begin
       watch opts[:changes]
     end
 
+    puts "[WAITING]..."
+
     if opts[:notify]
       system "notify-send '#{opts[:notify]}'"
     end
-
-    puts "[WAITING]..."
 
     sleep(wait)
   end
