@@ -22,6 +22,10 @@ opts = Trollop::options do
     "clear screen upon refresh",
     :default => true
 
+  opt :recursive,
+    "check paths recursively for changes",
+    :default => true
+
   # don't parse flags for the actual command
   stop_on_unknown
 end
@@ -32,11 +36,22 @@ Trollop::die "no command specified" if ARGV.empty?
 wait = opts[:wait] || (opts[:changes].empty? ? 1 : 0)
 
 
-def watch files
+def watch files, recursive: true
   notifier = INotify::Notifier.new
 
-  files.each do |file|
-    notifier.watch(file, :close_write)
+  to_watch = files.dup
+
+  if recursive
+    dirs = files.select{|f| File.directory? f}
+    dirs.each do |dir|
+      to_watch += Dir["#{dir}/**/*/"]
+    end
+  end
+
+  to_watch.uniq!
+
+  to_watch.each do |f|
+    notifier.watch(f, :close_write)
   end
 
   notifier.process
@@ -54,7 +69,7 @@ begin
     puts "[WAITING]..."
 
     if not opts[:changes].empty?
-      watch opts[:changes]
+      watch opts[:changes], recursive: opts[:recursive]
     end
 
     if opts[:notify]
