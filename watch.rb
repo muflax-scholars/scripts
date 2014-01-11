@@ -66,7 +66,7 @@ begin
     end
 
     system "zsh -l -c '#{ARGV.join(" ")}'"
-    puts "[WAITING]..."
+    print "[WAITING]..."
 
     if not opts[:changes].empty?
       watch opts[:changes], recursive: opts[:recursive]
