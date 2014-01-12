@@ -32,7 +32,7 @@ end
 tag = opts[:tag]
 
 ARGV.each do |file|
-  next unless File.exist? file
+  next unless File.file? file or File.symlink? file
 
   # parse file name
   m    = file.match(/^ (?<base> .+?) (?<tags> _{\w+})* (?<ext> (\. .+?)+ )? $/x)
