@@ -83,7 +83,7 @@ begin
     rescue Interrupt
       # catch the ^C and just abort the running program
       puts "[^C stands for TRY AGAIN]"
-      sleep(4)
+      sleep(3)
     end
 
   end
