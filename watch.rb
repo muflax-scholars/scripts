@@ -61,22 +61,32 @@ end
 
 begin
   while true
-    if opts[:clear]
-      system "clear"
+    begin
+      if opts[:clear]
+        system "clear"
+      end
+
+      system "zsh -l -c '#{ARGV.join(" ")}'"
+
+      if opts[:notify]
+        system "notify-send '#{opts[:notify]}'"
+      end
+
+      print "[WAITING]..."
+
+      if not opts[:changes].empty?
+        watch opts[:changes], recursive: opts[:recursive]
+      end
+
+      sleep(wait)
+
+    rescue Interrupt
+      # catch the ^C and just abort the running program
+      puts "[^C stands for TRY AGAIN]"
+      sleep(4)
     end
 
-    system "zsh -l -c '#{ARGV.join(" ")}'"
-    print "[WAITING]..."
-
-    if not opts[:changes].empty?
-      watch opts[:changes], recursive: opts[:recursive]
-    end
-
-    if opts[:notify]
-      system "notify-send '#{opts[:notify]}'"
-    end
-
-    sleep(wait)
   end
 rescue Interrupt
+  # end for real
 end
