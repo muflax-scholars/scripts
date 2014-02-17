@@ -4,8 +4,13 @@ eclient=$(which emacsclient)
 emacs=$(which emacs-24)
 vim=$(which vim)
 
-if [[ ${0:t} == "emacs-gui" ]]; then
+name=${0:t}
+
+if [[ $name == "emacs-gui" ]]; then
   argclient=("-c" "-n")
+  argemacs=""
+elif [[ $name == "emacs-gui-wait" ]]; then
+  argclient=("-c")
   argemacs=""
 else
   argclient="-nw"
