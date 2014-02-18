@@ -16,7 +16,7 @@ end
 
 class String
   def shell_name
-    name = File.symlink?(self) ? File.readlink(self) : self
+    name = File.symlink?(self) ? Pathname(self).realpath.to_s : self
 
     name.shellescape
   end
@@ -61,7 +61,7 @@ class MediaDirectory
 
   def each_media_file
     Pathname(@path).find do |file|
-      next if file.directory? or (file.symlink? and not file.readlink.exist?)
+      next if file.directory? or (file.symlink? and not file.realpath.exist?)
 
       case File.extname(file).downcase
       when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf .ogg .flac]
@@ -83,7 +83,7 @@ class MediaDirectory
 end
 
 opts = Trollop::options do
-  banner "usage: media_size"
+  banner "usage: media_size [files / dirs / empty for '.']"
 
   opt :total, "print total", :default => true
   opt :cache, "use cache"
@@ -102,6 +102,7 @@ total = 0
 paths.each do |path|
   if File.directory?(path)
     dir_total = 0
+
     MediaDirectory.new(path).each_media_file do |file|
       duration = MediaFile.new(file).duration
       puts "#{format_time(duration)}    #{file}"
@@ -115,7 +116,7 @@ paths.each do |path|
     total += dir_total
   else
     next unless File.exist? path
-    next if File.symlink? path and not File.exist? File.readlink(path)
+    next if File.symlink? path and not Pathname(path).realpath.exist?
 
     duration = MediaFile.new(path).duration
     puts "#{format_time(duration)}    #{path}"
@@ -123,4 +124,4 @@ paths.each do |path|
   end
 end
 
-puts "#{format_time(total)}    total" if opts[:total]
+puts "#{format_time(total)} => total" if opts[:total]
