@@ -10,9 +10,15 @@ require "awesome_print"
 
 class Pathname
   def shell_name
-    name = self.symlink? ? File.readlink(self) : self
+    self.to_s.shell_name
+  end
+end
 
-    name.to_s.shellescape
+class String
+  def shell_name
+    name = File.symlink?(self) ? File.readlink(self) : self
+
+    name.shellescape
   end
 end
 
@@ -55,7 +61,8 @@ class MediaDirectory
 
   def each_media_file
     Pathname(@path).find do |file|
-      next if file.directory?
+      next if file.directory? or (file.symlink? and not file.readlink.exist?)
+
       case File.extname(file).downcase
       when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf .ogg .flac]
         yield file
@@ -107,8 +114,11 @@ paths.each do |path|
 
     total += dir_total
   else
+    next unless File.exist? path
+    next if File.symlink? path and not File.exist? File.readlink(path)
+
     duration = MediaFile.new(path).duration
-    puts "#{format_time(duration)}    #{file}"
+    puts "#{format_time(duration)}    #{path}"
     total += duration
   end
 end
