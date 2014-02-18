@@ -1,33 +1,40 @@
 #!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
 
 require "pathname"
 require "shellwords"
 require "moneta"
 require "digest"
+require "trollop"
+require "awesome_print"
 
 class Pathname
-  def shellescape
-    to_s.shellescape
+  def shell_name
+    name = self.symlink? ? File.readlink(self) : self
+
+    name.to_s.shellescape
   end
 end
 
 def format_time(s)
-  "%d:%02d:%02d" % [s/3600, s/60%60, s%60]
+  "%2d:%02d:%02d" % [s/3600, s/60%60, s%60]
 end
 
 class MediaFile
-  Cache = Moneta.new(:File, dir: "#{ENV["HOME"]}/.media_size_cache/")
   def initialize(path)
     @path = path
   end
+
   def hash
     @hash ||= Digest::SHA1.hexdigest(File.read(@path))
   end
+
   def duration
     Cache[hash] ||= compute_duration
   end
+
   def compute_duration
-    answer = `exiftool -n -s -Duration -PlayDuration #{@path.shellescape}`
+    answer = `exiftool -n -s -Duration -PlayDuration #{@path.shell_name}`
     answer.sub!(" (approx)", "")
     if answer.empty?
       # warn "Unknown size of #{@path}"
@@ -45,46 +52,65 @@ class MediaDirectory
   def initialize(path)
     @path = path
   end
+
   def each_media_file
     Pathname(@path).find do |file|
       next if file.directory?
       case File.extname(file).downcase
-      when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf]
+      when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf .ogg .flac]
         yield file
       when *%W[.sub .txt .jpg .png .srt]
       else
-        if `file -ib #{file.shellescape}` =~ %r[\A(audio|video)/]
+        if `file -ib #{file.shell_name}` =~ %r[\A(audio|video)/]
           yield file
         end
       end
     end
   end
-  def file_duration(file)
-    MediaFile.new(file).duration
-  end
-  def print_total!
-    total = 0
-    each_media_file do |file|
-      total += file_duration(file)
+
+  def durations
+    each_media_file.map do |file|
+      file_duration(file)
     end
-    puts "#{@path}: #{format_time(total)}"
-    total
   end
 end
 
-print_totals = false
-if ARGV[0] == "-t"
-  ARGV.shift
-  print_totals = true
+opts = Trollop::options do
+  banner "usage: media_size"
+
+  opt :total, "print total", :default => true
+  opt :cache, "use cache"
 end
 
-if ARGV.empty?
-  STDERR.puts "Usage: #{$0} [-t] <media_dir1> <media_dir2> ..."
-  exit 1
-else
-  total = 0
-  ARGV.each do |path|
-    total += MediaDirectory.new(path).print_total!
+Cache = if opts[:cache]
+          Moneta.new(:File, dir: "#{ENV["HOME"]}/.cache/media_size/")
+        else
+          Moneta.new(:Memory)
+        end
+
+paths = ARGV.empty? ? ["."] : ARGV
+
+total = 0
+
+paths.each do |path|
+  if File.directory?(path)
+    dir_total = 0
+    MediaDirectory.new(path).each_media_file do |file|
+      duration = MediaFile.new(file).duration
+      puts "#{format_time(duration)}    #{file}"
+
+      dir_total += duration
+    end
+
+    puts "#{format_time(dir_total)} => #{path}"
+    puts
+
+    total += dir_total
+  else
+    duration = MediaFile.new(path).duration
+    puts "#{format_time(duration)}    #{file}"
+    total += duration
   end
-  puts "Total: #{format_time(total)}" if print_totals
 end
+
+puts "#{format_time(total)}    total" if opts[:total]
