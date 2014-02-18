@@ -2,6 +2,8 @@
 
 require "pathname"
 require "shellwords"
+require "moneta"
+require "digest"
 
 class Pathname
   def shellescape
@@ -9,11 +11,22 @@ class Pathname
   end
 end
 
+def format_time(s)
+  "%d:%02d:%02d" % [s/3600, s/60%60, s%60]
+end
+
 class MediaFile
+  Cache = Moneta.new(:File, dir: "#{ENV["HOME"]}/.media_size_cache/")
   def initialize(path)
     @path = path
   end
+  def hash
+    @hash ||= Digest::SHA1.hexdigest(File.read(@path))
+  end
   def duration
+    Cache[hash] ||= compute_duration
+  end
+  def compute_duration
     answer = `exiftool -n -s -Duration -PlayDuration #{@path.shellescape}`
     answer.sub!(" (approx)", "")
     if answer.empty?
@@ -35,7 +48,7 @@ class MediaDirectory
   def each_media_file
     Pathname(@path).find do |file|
       next if file.directory?
-      case File.extname(file)
+      case File.extname(file).downcase
       when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf]
         yield file
       when *%W[.sub .txt .jpg .png .srt]
@@ -49,25 +62,29 @@ class MediaDirectory
   def file_duration(file)
     MediaFile.new(file).duration
   end
-  def format_time(s)
-    "%d:%02d:%02d" % [s/3600, s/60%60, s%60]
-  end
   def print_total!
     total = 0
     each_media_file do |file|
-      d = file_duration(file)
-      # puts "  [#{file} - #{d}]"
-      total += d
+      total += file_duration(file)
     end
     puts "#{@path}: #{format_time(total)}"
+    total
   end
 end
 
+print_totals = false
+if ARGV[0] == "-t"
+  ARGV.shift
+  print_totals = true
+end
+
 if ARGV.empty?
-  STDERR.puts "Usage: #{$0} <media_dir1> <media_dir2> ..."
+  STDERR.puts "Usage: #{$0} [-t] <media_dir1> <media_dir2> ..."
   exit 1
 else
+  total = 0
   ARGV.each do |path|
-    MediaDirectory.new(path).print_total!
+    total += MediaDirectory.new(path).print_total!
   end
+  puts "Total: #{format_time(total)}" if print_totals
 end
