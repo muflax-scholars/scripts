@@ -8,6 +8,8 @@ if `hostname`.strip != "scabeiathrax"
   exit
 end
 
+ENV["DISPLAY"]=":0"
+
 ids = []
 
 `xinput`.split("\n").each do |line|
