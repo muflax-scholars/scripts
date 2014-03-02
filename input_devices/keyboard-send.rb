@@ -14,10 +14,9 @@ else
   exit 1
 end
 
-ENV["DISPLAY"]=":0"
+ENV["DISPLAY"] = ":0"
 
 ids = []
-
 `xinput`.split("\n").each do |line|
   if line =~ /USB Keyboard/
     ids << line[/id=(\d+)/, 1]
@@ -25,7 +24,6 @@ ids = []
 end
 
 status = 0
-
 ids.each do |id|
   `xinput list-props #{id}`.split("\n").each do |line|
     if line =~ /Device Enabled/
