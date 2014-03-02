@@ -3,9 +3,15 @@
 # Copyright muflax <mail@muflax.com>, 2014
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
-if `hostname`.strip != "scabeiathrax"
+case `hostname`.strip
+when "scabeiathrax"
+  system "ssh typhus.local -- zsh -l -c 'keyboard-listen.rb'"
+when "typhus"
   system "ssh scabeiathrax.local -- zsh -l -c 'keyboard-send.rb'"
   exit
+else
+  puts "wtf mate?"
+  exit 1
 end
 
 ENV["DISPLAY"]=":0"
