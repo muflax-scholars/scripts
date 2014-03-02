@@ -5,8 +5,10 @@
 
 case `hostname`.strip
 when "scabeiathrax"
+  puts "starting netcat on typhus..."
   system "ssh typhus.local -- zsh -l -c 'keyboard-listen.sh'"
 when "typhus"
+  puts "running script on scabeiathrax..."
   system "ssh scabeiathrax.local -- zsh -l -c 'keyboard-send.rb'"
   exit
 else
@@ -32,17 +34,29 @@ ids.each do |id|
   end
 end
 
+puts "status: #{status} (#{ids.join(", ")})"
+
 case status
 when 0
-  # -> scabeiathrax
+  puts "-> scabeiathrax"
+
+  puts "enabling keyboard again..."
   ids.each do |id|
     system "xinput enable #{id}"
   end
+
+  puts "killing netcat..."
   system "killall -q netcat"
 when 1
-  # -> typhus
+  puts "-> typhus"
+
+  puts "disabling keyboard..."
   ids.each do |id|
     system "xinput disable #{id}"
   end
+
+  puts "sending keyboard events to typhus..."
   system "cat /dev/input/by-id/usb-04d9_USB_Keyboard-event-kbd | netcat typhus.local 4444 &"
 end
+
+puts "done."
