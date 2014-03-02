@@ -56,7 +56,7 @@ when 1
   end
 
   puts "sending keyboard events to typhus..."
-  system "cat /dev/input/by-id/usb-04d9_USB_Keyboard-event-kbd | netcat typhus.local 4444 &"
+  system "cat /dev/input/by-id/usb-04d9_USB_Keyboard-event-kbd | netcat typhus.local 4444"
 end
 
 puts "done."
