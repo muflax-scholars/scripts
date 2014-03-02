@@ -5,7 +5,7 @@
 
 case `hostname`.strip
 when "scabeiathrax"
-  system "ssh typhus.local -- zsh -l -c 'keyboard-listen.rb'"
+  system "ssh typhus.local -- zsh -l -c 'keyboard-listen.sh'"
 when "typhus"
   system "ssh scabeiathrax.local -- zsh -l -c 'keyboard-send.rb'"
   exit
