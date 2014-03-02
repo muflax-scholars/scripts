@@ -4,7 +4,7 @@
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
 if `hostname`.strip != "scabeiathrax"
-  system "ssh scabeiathrax.local -- keyboard-send.rb"
+  system "ssh scabeiathrax.local -- zsh -l -c 'keyboard-send.rb'"
   exit
 end
 
