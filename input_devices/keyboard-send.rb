@@ -3,8 +3,8 @@
 # Copyright muflax <mail@muflax.com>, 2014
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
-if `hostname` != "scabeiathrax"
-  system "scab keyboard-send.rb"
+if `hostname`.strip != "scabeiathrax"
+  system "ssh scabeiathrax.local -- keyboard-send.rb"
   exit
 end
 
@@ -21,7 +21,7 @@ status = 0
 ids.each do |id|
   `xinput list-props #{id}`.split("\n").each do |line|
     if line =~ /Device Enabled/
-      status = [line[/:\s+(\d)/, 1].to_i, status].min
+      status = [line[/:\s+(\d)/, 1].to_i, status].max
     end
   end
 end
@@ -32,7 +32,7 @@ when 0
   ids.each do |id|
     system "xinput enable #{id}"
   end
-  system "killall netcat"
+  system "killall -q netcat"
 when 1
   # -> typhus
   ids.each do |id|
