@@ -5,8 +5,7 @@ require "pathname"
 require "shellwords"
 require "moneta"
 require "digest"
-require "trollop"
-require "awesome_print"
+require "muflax"
 
 class Pathname
   def shell_name
@@ -61,7 +60,11 @@ class MediaDirectory
 
   def each_media_file
     Pathname(@path).find do |file|
-      next if file.directory? or (file.symlink? and not file.realpath.exist?)
+      begin
+        next if file.directory? or (file.symlink? and not file.realpath.exist?)
+      rescue
+        next
+      end
 
       case File.extname(file).downcase
       when *%W[.mp4 .avi .flv .mp3 .mpg .mkv .flv .wmv .asf .ogg .flac]
