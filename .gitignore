@@ -1,6 +1,6 @@
-*.o
-*.swp
-
 # login data
 *-cron.sh
 glacier-backup.sh
+
+# go binaries
+go/ncp
