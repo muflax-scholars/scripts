@@ -3,4 +3,5 @@
 glacier-backup.sh
 
 # go binaries
-go/ncp
+go/*
+!go/*.go

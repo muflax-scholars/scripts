@@ -1,7 +1,8 @@
 desc "compile go scripts"
 task :go do
-  Dir["#{__dir__}/go/*.go"].sort.each do |go|
-    sh "go build #{go}"
+  go_dir = "#{__dir__}/go"
+  Dir["#{go_dir}/*.go"].sort.each do |go|
+    sh "cd #{go_dir}; go build #{go}"
   end
 end
 
