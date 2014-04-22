@@ -11,20 +11,14 @@ opts = Trollop::options do
     "sleep period, in seconds (default 1s unless --changes is specified)",
     :type => :float,
     :short => "-t"
-  opt :changes,
-    "watch path for changes",
-    :type => :string,
-    :multi => true
-  opt :notify,
-    "send notification on changes",
-    :type => :string
-  opt :clear,
-    "clear screen upon refresh",
-    :default => true
 
-  opt :recursive,
-    "check paths recursively for changes",
-    :default => true
+  opt :changes, "watch path for changes",       :type => :string, :multi => true
+  opt :notify,  "send notification on changes", :type => :string
+
+  opt :recursive, "check paths recursively for changes", :default => true
+  opt :clear,     "clear screen upon refresh",           :default => true
+
+  opt :quiet, "don't show status messages"
 
   # don't parse flags for the actual command
   stop_on_unknown
@@ -72,7 +66,7 @@ begin
         system "notify-send '#{opts[:notify]}'"
       end
 
-      print "[WAITING]..."
+      print "[WAITING]..." unless opts[:quiet]
 
       if not opts[:changes].empty?
         watch opts[:changes], recursive: opts[:recursive]
