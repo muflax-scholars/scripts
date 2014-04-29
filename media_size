@@ -93,7 +93,7 @@ opts = Trollop::options do
 end
 
 Cache = if opts[:cache]
-          Moneta.new(:PStore, file: "#{ENV["HOME"]}/cache/media_size")
+          Moneta.new(:PStore, file: "#{ENV["HOME"]}/.cache/media_size")
         else
           Moneta.new(:Memory)
         end
