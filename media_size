@@ -41,15 +41,14 @@ class MediaFile
   def compute_duration
     answer = `exiftool -n -s -Duration -PlayDuration #{@path.shell_name}`
     answer.sub!(" (approx)", "")
-    if answer.empty?
-      # warn "Unknown size of #{@path}"
-      0
-    elsif answer =~ /\A(?:Track|Play)?Duration\s*:\s*(\d+\.?\d*)\s*\z/
-      $1.to_i
-    else
-      warn "Parse error: `#{answer}'"
-      0
+
+    time = 0
+
+    if m = answer.match(/^ (?:Track|Play)? Duration \s* : \s* (?<time> \d+ (\.\d+)?) \s* $/x)
+      time = m[:time].to_f
     end
+
+    time
   end
 end
 
