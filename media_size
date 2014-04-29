@@ -31,7 +31,7 @@ class MediaFile
   end
 
   def hash
-    @hash ||= Digest::SHA1.hexdigest(File.read(@path))
+    @hash ||= [File.absolute_path(@path), File.size(@path), File.mtime(@path).to_i]
   end
 
   def duration
@@ -89,11 +89,11 @@ opts = Trollop::options do
   banner "usage: media_size [files / dirs / empty for '.']"
 
   opt :total, "print total", :default => true
-  opt :cache, "use cache"
+  opt :cache, "use cache",   :default => true
 end
 
 Cache = if opts[:cache]
-          Moneta.new(:File, dir: "#{ENV["HOME"]}/.cache/media_size/")
+          Moneta.new(:PStore, file: "#{ENV["HOME"]}/cache/media_size")
         else
           Moneta.new(:Memory)
         end
