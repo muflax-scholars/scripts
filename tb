@@ -15,9 +15,9 @@ def timebox(tb_time, sd_time):
     already_done = 0
     try:
         while end > time.time():
-            os.system("echo 'tb: %d分'" % already_done)
+            print("tb: %d分" % already_done)
             time.sleep(60)
-            already_done += 1 
+            already_done += 1
     except KeyboardInterrupt:
         aborted = True
         print("aborted...")
@@ -27,27 +27,24 @@ def timebox(tb_time, sd_time):
     finally:
         if already_done:
             sys.stdout.write('\a')
-            sys.stdout.flush() 
+            sys.stdout.flush()
             print("やった！　(*＾０＾*)")
-        
+
             if not aborted:
-                os.system("mplayer -quiet -really-quiet /home/amon/.timeboxing")
+                os.system("mplayer -quiet -really-quiet $HOME/.timeboxing")
 
             os.system("gxmessage -timeout 5 'やった！(*＾０＾*)'")
-            #os.system("alock -auth pam")
-
-
 
 def main():
     if len(sys.argv) < 2:
         usage()
-    
+
     m = re.search("""
-                  ^( (?P<tb_h>\d+) h )? 
+                  ^( (?P<tb_h>\d+) h )?
                    ( (?P<tb_m>\d+) m? )?
                    (\+
-                     ( (?P<sd_h>\d+) h )? 
-                     ( (?P<sd_m>\d+) m? )?  
+                     ( (?P<sd_h>\d+) h )?
+                     ( (?P<sd_m>\d+) m? )?
                    )?
                   """, sys.argv[1], re.X)
     tb_time = sd_time = 0
@@ -69,4 +66,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
