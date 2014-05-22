@@ -3,6 +3,7 @@
 # Copyright muflax <mail@muflax.com>, 2014
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
+require "active_support"
 require "active_support/core_ext/numeric"
 require "trollop"
 
