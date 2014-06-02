@@ -33,7 +33,7 @@ def timebox(tb_time, sd_time):
             if not aborted:
                 os.system("mplayer -quiet -really-quiet $HOME/.timeboxing")
 
-            os.system("gxmessage -timeout 5 'やった！(*＾０＾*)'")
+            os.system("notify-send --urgency critical 'やった！(*＾０＾*)'")
 
 def main():
     if len(sys.argv) < 2:
