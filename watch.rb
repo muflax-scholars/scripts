@@ -60,13 +60,23 @@ begin
         system "clear"
       end
 
+      start   = Time.now
       system "zsh -l -c '#{ARGV.join(" ")}'"
+      runtime = Time.now - start
 
       if opts[:notify]
         system "notify-send '#{opts[:notify]}'"
       end
 
-      print "[WAITING]..." unless opts[:quiet]
+      duration = if runtime >= 1.hour
+                   "%dh%02dm%02ds" % [runtime / 1.hour, runtime % 1.hour, runtime % 1.minute]
+                 elsif runtime >= 1.minute
+                   "%dm%02ds" % [runtime / 1.minute, runtime % 1.minute]
+                 else
+                   "%ds" % runtime
+                 end
+
+      print "[WAITING (#{duration})]..." unless opts[:quiet]
 
       if not opts[:changes].empty?
         watch opts[:changes], recursive: opts[:recursive]
