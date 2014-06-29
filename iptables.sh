@@ -23,12 +23,9 @@ iptables -A open -i lo -j ACCEPT
 iptables -A open -s 192.168.1.0/24 -j ACCEPT
 iptables -A open -s 127.0.0.1 -j ACCEPT
 
-# allow everything within this limit
-# iptables -A open -m time --timestart 12:00 --timestop 20:00 -j ACCEPT
-
 # block the rest, in a not-so-rude way :)
-iptables -A INPUT -p tcp -j REJECT --reject-with tcp-reset 
-iptables -A INPUT -p udp -j REJECT --reject-with icmp-port-unreachable 
+iptables -A INPUT -p tcp -j REJECT --reject-with tcp-reset
+iptables -A INPUT -p udp -j REJECT --reject-with icmp-port-unreachable
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT DROP
