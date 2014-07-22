@@ -9,7 +9,6 @@ if [[ ${terminfo[colors]} -ge 8 ]] then
   colors
 fi
 
-
 for repo in ~/src/**/.(git|hg)(/); do
   cd $repo/..
 
@@ -19,7 +18,12 @@ for repo in ~/src/**/.(git|hg)(/); do
       for remote in $(git remote); do
         git fetch $remote
       done
-      git gc --auto
+
+      if [[ $1 == "gc" ]]; then
+        git gc
+      else
+        git gc --auto
+      fi
       ;;
     */.hg)
       hg pull
