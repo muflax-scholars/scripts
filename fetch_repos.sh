@@ -16,13 +16,15 @@ for repo in ~/src/**/.(git|hg)(/); do
   case $repo in
     */.git)
       for remote in $(git remote); do
-        git fetch $remote
+        git fetch $remote --recurse-submodules
       done
 
       if [[ $1 == "gc" ]]; then
         git gc
+        git submodule foreach "git gc || true"
       else
         git gc --auto
+        git submodule foreach "git gc --auto || true"
       fi
       ;;
     */.hg)
