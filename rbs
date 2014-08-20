@@ -32,7 +32,7 @@ echo $$ > /tmp/rbs.lock
 
 echo "update local bup index..."
 cd $HOME # do it here so that the bupignore paths work without rewriting
-ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore --exclude-rx-from $HOME/.bupignore_rx
+ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore --exclude-from $HOME/.git_annex_dirs
 
 # check if backup machine is available
 ping -w 5 -c 1 $BACKUP_MACHINE
