@@ -32,13 +32,13 @@ echo $$ > /tmp/rbs.lock
 
 echo "update local bup index..."
 cd $HOME # do it here so that the bupignore paths work without rewriting
-ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore
+ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore --exclude-rx-from $HOME/.bupignore_rx
 
 # check if backup machine is available
 ping -w 5 -c 1 $BACKUP_MACHINE
 if [ $? -eq 0 ]; then
   # start backup
-  
+
   echo "saving daily pigs..."
   ionice -c3 /bin/mv $HOME/pigs/daily/* $BACKUP_DIR/daily_pigs/
   echo "pigs saved."
