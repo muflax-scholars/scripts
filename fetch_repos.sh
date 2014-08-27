@@ -9,7 +9,7 @@ if [[ ${terminfo[colors]} -ge 8 ]] then
   colors
 fi
 
-for repo in ~/src/**/.(git|hg)(/); do
+for repo in ~/src/**/(.git|.hg|_darcs)(/); do
   cd $repo/..
 
   echo "fetching $fg[cyan]$(pwd)$reset_color..."
@@ -27,8 +27,13 @@ for repo in ~/src/**/.(git|hg)(/); do
         git submodule foreach "git gc --auto || true"
       fi
       ;;
+
     */.hg)
       hg pull
+      ;;
+
+    */_darcs)
+      darcs fetch --all
       ;;
   esac
 done
