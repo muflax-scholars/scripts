@@ -26,6 +26,11 @@ for repo in ~/src/**/(.git|.hg|_darcs)(/); do
         git gc --auto
         git submodule foreach "git gc --auto || true"
       fi
+
+      if [[ -e ".git/svn" ]]; then
+        git svn fetch
+      fi
+
       ;;
 
     */.hg)
