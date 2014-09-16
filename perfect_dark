@@ -1,4 +1,4 @@
 #!/bin/zsh
 
-cd $HOME/p2p/perfect_dark
-wine explorer /desktop=pd,1024x768 "perfect dark.exe" &> /dev/null &! 
+cd $HOME/stuff/perfect_dark
+wine explorer /desktop=pd,1024x768 "perfect dark.exe" &> /dev/null &!
