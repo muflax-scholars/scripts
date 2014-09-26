@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -l
 
 eclient=$(which emacsclient)
 emacs=$(which emacs-24)

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -l
 setopt extendedglob
 
 function common() {

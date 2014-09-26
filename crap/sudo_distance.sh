@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -l
 # Copyright muflax <mail@muflax.com>, 2010
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
