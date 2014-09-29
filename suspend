@@ -3,7 +3,7 @@
 # suspending...
 ###############
 # error checking
-if [[ $# -gt 0 ]] then  
+if [[ $# -gt 0 ]] then
   TIME=$(( $(date -d "$*" +%s) - $(date +%s)))
   if [[ $TIME -lt 0 || $TIME -gt $(( 24 * 60 * 60 )) ]] then
     echo "time $TIME seems invalid..."
@@ -63,7 +63,7 @@ fi
 
 # set backlight level
 if [[ $(hostname) == "scabeiathrax" ]] then
-  echo $light > /sys/class/backlight/nvidia_backlight/brightness
+  echo $light >! /sys/class/backlight/nvidia_backlight/brightness
 fi
 
 # daemons
