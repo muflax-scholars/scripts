@@ -65,9 +65,12 @@ begin
         system "clear"
       end
 
-      process = Thread.new do
+      pid = Process.spawn("zsh -l -c '#{ARGV.join(" ")}'")
+
+      wait_thread = Thread.new do
         start = Time.now
-        system "zsh -l -c '#{ARGV.join(" ")}'"
+        Process.wait(pid)
+
         runtime = Time.now - start
 
         if opts[:notify]
@@ -86,14 +89,14 @@ begin
       end
 
       # wait for the process by default
-      process.join unless opts[:kill]
+      wait_thread.join unless opts[:kill]
 
       if not opts[:changes].empty?
-        watchdog = Thread.new do
+        watchdog_thread = Thread.new do
           watch opts[:changes], recursive: opts[:recursive]
         end
 
-        watchdog.join
+        watchdog_thread.join
       end
 
       sleep(wait)
@@ -108,6 +111,7 @@ begin
     Thread.list.select{|t| t != Thread.current}.each do |thread|
       thread.kill
     end
+    Process.kill(:TERM, pid)
   end
 rescue Interrupt
   # end for real
