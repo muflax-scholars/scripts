@@ -111,7 +111,12 @@ begin
     Thread.list.select{|t| t != Thread.current}.each do |thread|
       thread.kill
     end
-    Process.kill(:TERM, pid)
+    begin
+      Process.kill(:TERM, pid)
+      Process.wait(pid)
+    rescue Errno::ESRCH
+      # process already terminated, don't care
+    end
   end
 rescue Interrupt
   # end for real
