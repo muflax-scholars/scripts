@@ -19,13 +19,20 @@ for repo in ~/src/**/(.git|.hg|_darcs)(/); do
         git fetch $remote --recurse-submodules
       done
 
-      if [[ $1 == "gc" ]]; then
-        git gc
-        git submodule foreach "git gc || true"
-      else
-        git gc --auto
-        git submodule foreach "git gc --auto || true"
-      fi
+      case $1 in
+        "gc")
+          git gc
+          git submodule foreach "git gc || true"
+          ;;
+        "fsck")
+          git fsck
+          git submodule foreach "git fsck || true"
+          ;;
+        *)
+          git gc --auto
+          git submodule foreach "git gc --auto || true"
+          ;;
+      esac
 
       if [[ -e ".git/svn" ]]; then
         git svn fetch
