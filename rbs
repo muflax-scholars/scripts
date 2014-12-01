@@ -6,6 +6,8 @@ source ~/.zsh/env.sh
 source ~/.zsh/path.sh
 
 BACKUP_DIR="/mnt/nfs/backup"
+BACKUP_BUP="${BACKUP_DIR}/home"
+S3_BUCKET="s3://bup.muflax.com"
 BACKUP_MACHINE="pleonasty.local"
 DATE_FORMAT="+%Y-%m-%d"
 
@@ -36,20 +38,21 @@ ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore --exclude-f
 
 # check if backup machine is available
 ping -w 5 -c 1 $BACKUP_MACHINE
-if [ $? -eq 0 ]; then
-  # start backup
-
+if [ $? -eq 0 ]; then # start backup
   echo "saving daily pigs..."
-  ionice -c3 /bin/mv $HOME/pigs/daily/* $BACKUP_DIR/daily_pigs/
+  /bin/mv $HOME/pigs/daily/* $BACKUP_DIR/daily_pigs/
   echo "pigs saved."
 
   echo "copy bup packs..."
   branch="$(hostname)-$(date $DATE_FORMAT)"
-  ionice -c3 bup save -n $branch $HOME -r $BACKUP_DIR/home/
+  bup save -n $branch $HOME -r $BACKUP_BUP/
 
   echo "verify bup packs..."
-  cd $BACKUP_DIR/home
-  ionice -c3 bup -d . fsck -g -vv
+  cd $BACKUP_BUP
+  bup -d . fsck -g -vv
+
+  echo "uploading to amazon..."
+  s3cmd sync --progress --verbose --delete-removed --no-check-md5 $BACKUP_BUP/ $S3_BUCKET
 fi
 
 # remove lockfile
