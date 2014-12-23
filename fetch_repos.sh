@@ -40,12 +40,5 @@ for repo in ~/src/**/(.git|.hg|_darcs)(/); do
 
       ;;
 
-    */.hg)
-      hg pull
-      ;;
-
-    */_darcs)
-      darcs fetch --all
-      ;;
   esac
 done
