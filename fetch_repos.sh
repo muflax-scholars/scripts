@@ -9,36 +9,34 @@ if [[ ${terminfo[colors]} -ge 8 ]] then
   colors
 fi
 
-for repo in ~/src/**/(.git|.hg|_darcs)(/); do
+for repo in ~/src/**/.git(/); do
   cd $repo/..
 
   echo "fetching $fg[cyan]$(pwd)$reset_color..."
-  case $repo in
-    */.git)
-      for remote in $(git remote); do
-        git fetch $remote --recurse-submodules
-      done
+  for remote in $(git remote); do
+    git fetch $remote --recurse-submodules
+  done
 
-      case $1 in
-        "gc")
-          git gc
-          git submodule foreach "git gc || true"
-          ;;
-        "fsck")
-          git fsck
-          git submodule foreach "git fsck || true"
-          ;;
-        *)
-          git gc --auto
-          git submodule foreach "git gc --auto || true"
-          ;;
-      esac
-
-      if [[ -e ".git/svn" ]]; then
-        git svn fetch
-      fi
-
+  case $1 in
+    "gc")
+      git gc
+      git submodule foreach "git gc || true"
       ;;
-
+    "fsck")
+      git fsck
+      git submodule foreach "git fsck || true"
+      ;;
+    *)
+      git gc --auto
+      git submodule foreach "git gc --auto || true"
+      ;;
   esac
+
+  if [[ -e ".git/svn" ]]; then
+    git svn fetch
+  fi
+
+  if [[ -e ".git/annex" ]]; then
+    git annex sync
+  fi
 done
