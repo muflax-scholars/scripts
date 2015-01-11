@@ -78,9 +78,12 @@ begin
         end
 
         duration = if runtime >= 1.hour
-                     "%dh%02dm%02ds" % [runtime / 1.hour, runtime % 1.hour, runtime % 1.minute]
+                     "%dh%02dm%02ds" % [runtime / 1.hour,
+                                        (runtime % 1.hour) / 1.minute,
+                                        runtime % 1.minute]
                    elsif runtime >= 1.minute
-                     "%dm%02ds" % [runtime / 1.minute, runtime % 1.minute]
+                     "%dm%02ds" % [runtime / 1.minute,
+                                   runtime % 1.minute]
                    else
                      "%ds" % runtime
                    end
