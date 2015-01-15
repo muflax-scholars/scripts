@@ -2,11 +2,17 @@
 # Copyright muflax <mail@muflax.com>, 2013
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
+# always fail early
+set -e
+
 BACKUP_DIR="/mnt/nfs/backup"
 BACKUP_BUP="${BACKUP_DIR}/home"
 S3_BUCKET="s3://bup.muflax.com"
 BACKUP_MACHINE="pleonasty.local"
 DATE_FORMAT="+%Y-%m-%d"
+
+LOCAL_PIG_DIR="${HOME}/pigs/daily"
+CENTRAL_PIG_DIR="/mnt/nfs/pigs/daily"
 
 function is_locked() {
   # check for lockfile
@@ -34,10 +40,14 @@ cd $HOME # do it here so that the bupignore paths work without rewriting
 ionice -c3 bup index -u $HOME --xdev --exclude-from $HOME/.bupignore --exclude-from $HOME/.git_annex_dirs
 
 # check if backup machine is available
+set +e
 ping -w 5 -c 1 $BACKUP_MACHINE
+set -e
 if [ $? -eq 0 ]; then # start backup
   echo "saving daily pigs..."
-  /bin/mv $HOME/pigs/daily/* $BACKUP_DIR/daily_pigs/
+  $LOCAL_PIG_DIR/pigs.rb  	annex
+  $CENTRAl_PIG_DIR/pigs.rb	zip
+  $CENTRAl_PIG_DIR/pigs.rb	backup
   echo "pigs saved."
 
   echo "copy bup packs..."
