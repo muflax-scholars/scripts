@@ -34,22 +34,16 @@ def watch files, recursive: true
   notifier = INotify::Notifier.new
 
   to_watch = files.map do |f|
-    if File.directory? f
-      f
-    else
-      File.dirname(f)
-    end
+    File.directory?(f) ? f : File.dirname(f)
   end
 
   if recursive
-    to_watch.dup.each do |dir|
-      to_watch += Dir["#{dir}/**/*/"].select{|f| File.directory? f}
+    to_watch += to_watch.flat_map do |dir|
+      Dir["#{dir}/**/*/"].select{|f| File.directory? f}
     end
   end
 
-  to_watch.uniq!
-
-  to_watch.each do |f|
+  to_watch.uniq.each do |f|
     notifier.watch(f, :close_write)
   end
 
@@ -73,9 +67,7 @@ begin
 
         runtime = Time.now - start
 
-        if opts[:notify]
-          system "notify-send '#{opts[:notify]}'"
-        end
+        system "notify-send '#{opts[:notify]}'" if opts[:notify]
 
         duration = if runtime >= 1.hour
                      "%dh%02dm%02ds" % [runtime / 1.hour,
