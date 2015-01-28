@@ -3,21 +3,21 @@
 # Copyright muflax <mail@muflax.com>, 2013
 # License: GNU GPL 3 <http://www.gnu.org/copyleft/gpl.html>
 
-require "muflax"
+require "trollop"
 require "rb-inotify"
 
 opts = Trollop::options do
   opt :wait,
     "sleep period, in seconds (default 1s unless --changes is specified)",
-    :type 	=> :float,
-    :short	=> "-t"
+    type: 	:float,
+    short:	"-t"
 
-  opt :changes,	"watch path for changes",      	:type => :string,	:multi => true
-  opt :notify, 	"send notification on changes",	:type => :string
+  opt :changes,	"watch path for changes",      	type: :string,	multi: true
+  opt :notify, 	"send notification on changes",	type: :string
 
-  opt :recursive,	"check paths recursively for changes",           	:default => true
-  opt :clear,    	"clear screen upon refresh",                     	:default => true
-  opt :kill,     	"kills and restarts process if the path changes",	:default => false
+  opt :recursive,	"check paths recursively for changes",           	default: true
+  opt :clear,    	"clear screen upon refresh",                     	default: true
+  opt :kill,     	"kills and restarts process if the path changes",	default: false
 
   opt :quiet,	"don't show status messages"
 
@@ -55,9 +55,7 @@ end
 begin
   while true
     begin
-      if opts[:clear]
-        system "clear"
-      end
+      system "clear" if opts[:clear]
 
       pid = Process.spawn("zsh -l -c '#{ARGV.join(" ")}'")
 
@@ -69,13 +67,13 @@ begin
 
         system "notify-send '#{opts[:notify]}'" if opts[:notify]
 
-        duration = if runtime >= 1.hour
-                     "%dh%02dm%02ds" % [runtime / 1.hour,
-                                        (runtime % 1.hour) / 1.minute,
-                                        runtime % 1.minute]
-                   elsif runtime >= 1.minute
-                     "%dm%02ds" % [runtime / 1.minute,
-                                   runtime % 1.minute]
+        duration = if runtime >= (60*60)
+                     "%dh%02dm%02ds" % [runtime / (60*60),
+                                        (runtime % (60*60)) / 60,
+                                        runtime % 60]
+                   elsif runtime >= 60
+                     "%dm%02ds" % [runtime / 60,
+                                   runtime % 60]
                    else
                      "%ds" % runtime
                    end
