@@ -44,7 +44,7 @@ def watch files, recursive: true
   end
 
   to_watch.uniq.each do |f|
-    notifier.watch(f, :close_write)
+    notifier.watch(f, :close_write, :oneshot)
   end
 
   notifier.process
