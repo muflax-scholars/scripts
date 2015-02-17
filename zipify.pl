@@ -7,5 +7,5 @@ use warnings;
 my @entries = glob "*";
 
 for (grep {-d} @entries) {
-    system("zip -1 -r \"$_.zip\" \"$_\" && rm -rf \"$_\"");
+    system("zip -1 -r \"$_.zip\" \"$_\" && trash-put \"$_\"");
 }

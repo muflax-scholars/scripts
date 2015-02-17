@@ -32,6 +32,6 @@ do
 
   RESULT=$?
   if [ $RESULT -eq 0 ]; then
-    rm "$flac"
+    trash-put "$flac"
   fi
 done
