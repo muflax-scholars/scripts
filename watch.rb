@@ -43,8 +43,14 @@ def watch files, recursive: true
     end
   end
 
-  to_watch.uniq.each do |f|
-    notifier.watch(f, :close_write, :oneshot)
+  begin
+    to_watch.uniq.each do |f|
+      notifier.watch(f, :close_write, :move, :oneshot)
+    end
+  rescue SystemCallError => e
+    # in case of error, just stop the notifier
+    notifier.close
+    raise e
   end
 
   notifier.process
@@ -86,7 +92,13 @@ begin
 
       if not opts[:changes].empty?
         watchdog_thread = Thread.new do
-          watch opts[:changes], recursive: opts[:recursive]
+          begin
+            watch opts[:changes], recursive: opts[:recursive]
+          rescue SystemCallError => e
+            # throw an error, but continue anyway
+            warn e.inspect
+            warn e.backtrace
+          end
         end
 
         watchdog_thread.join
