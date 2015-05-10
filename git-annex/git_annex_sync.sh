@@ -6,6 +6,6 @@
 for dir in $(cat ~/.git_annex_dirs); do
   echo $dir...
   cd $HOME/$dir
-  git-annex add
+  # git-annex add
   git-annex sync
 done
