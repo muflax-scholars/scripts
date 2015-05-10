@@ -67,4 +67,4 @@ if [[ $(hostname) == "scabeiathrax" ]] then
 fi
 
 # daemons
-/etc/init.d/fcron start
+sleep 30s && /etc/init.d/fcron start
