@@ -96,8 +96,9 @@ begin
             watch opts[:changes], recursive: opts[:recursive]
           rescue SystemCallError => e
             # throw an error, but continue anyway
-            warn e.inspect
-            warn e.backtrace
+            STDERR.print "[some bullshit happened]"
+            # warn e.inspect
+            # warn e.backtrace
           end
         end
 
