@@ -47,10 +47,10 @@ def watch files, recursive: true, exclude: []
   begin
     to_watch.uniq.each do |f|
       notifier.watch(f, :close_write, :move) do |event|
-        file = event.name
+        file = event.absolute_name
 
         # don't stop the watch if the file is excluded
-        notifier.stop unless exclude.any?{|ex| file.start_with? ex}
+        notifier.stop unless exclude.any?{|ex| file =~ ex}
       end
     end
   rescue SystemCallError => e
@@ -63,6 +63,8 @@ def watch files, recursive: true, exclude: []
 end
 
 begin
+  exclude = opts[:exclude].map{|e| Regexp.new(e)}
+
   while true
     begin
       system "clear" if opts[:clear]
@@ -97,7 +99,7 @@ begin
       if not opts[:changes].empty?
         watchdog_thread = Thread.new do
           begin
-            watch opts[:changes], recursive: opts[:recursive], exclude: opts[:exclude]
+            watch opts[:changes], recursive: opts[:recursive], exclude: exclude
           rescue SystemCallError => e
             # throw an error, but continue anyway
             STDERR.print "[some bullshit happened]"
