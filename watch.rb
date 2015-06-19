@@ -12,8 +12,9 @@ opts = Trollop::options do
     type: 	:float,
     short:	"-t"
 
-  opt :changes,	"watch path for changes",      	type: :string,	multi: true
-  opt :notify, 	"send notification on changes",	type: :string
+  opt :changes,	"watch path for changes",          	type: :string,	multi: true
+  opt :exclude,	"exclude paths from being watched",	type: :string,	multi: true
+  opt :notify, 	"send notification on changes",    	type: :string
 
   opt :recursive,	"check paths recursively for changes",           	default: true
   opt :clear,    	"clear screen upon refresh",                     	default: true
@@ -30,7 +31,7 @@ Trollop::die "no command specified" if ARGV.empty?
 # wait either for the specified time, or 1 second if not in --changes mode
 wait = opts[:wait] || (opts[:changes].empty? ? 1 : 0)
 
-def watch files, recursive: true
+def watch files, recursive: true, exclude: []
   notifier = INotify::Notifier.new
 
   to_watch = files.map do |f|
@@ -45,7 +46,12 @@ def watch files, recursive: true
 
   begin
     to_watch.uniq.each do |f|
-      notifier.watch(f, :close_write, :move, :oneshot)
+      notifier.watch(f, :close_write, :move) do |event|
+        file = event.name
+
+        # don't stop the watch if the file is excluded
+        notifier.stop unless exclude.any?{|ex| file.start_with? ex}
+      end
     end
   rescue SystemCallError => e
     # in case of error, just stop the notifier
@@ -53,9 +59,7 @@ def watch files, recursive: true
     raise e
   end
 
-  notifier.process
-
-  notifier.close
+  notifier.run
 end
 
 begin
@@ -93,7 +97,7 @@ begin
       if not opts[:changes].empty?
         watchdog_thread = Thread.new do
           begin
-            watch opts[:changes], recursive: opts[:recursive]
+            watch opts[:changes], recursive: opts[:recursive], exclude: opts[:exclude]
           rescue SystemCallError => e
             # throw an error, but continue anyway
             STDERR.print "[some bullshit happened]"
