@@ -3,9 +3,9 @@
 # suspending...
 ###############
 # error checking
-if [[ $# -gt 0 ]] then
+if [[ $# -gt 0 ]]; then
   TIME=$(( $(date -d "$*" +%s) - $(date +%s)))
-  if [[ $TIME -lt 0 || $TIME -gt $(( 24 * 60 * 60 )) ]] then
+  if [[ $TIME -lt 0 || $TIME -gt $(( 24 * 60 * 60 )) ]]; then
     echo "time $TIME seems invalid..."
     exit 1
   fi
@@ -33,12 +33,12 @@ sync
 /etc/init.d/fcron stop
 
 # modules
-if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]] then
+if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]]; then
   modprobe -r iwl3945 || exit 1
 fi
 
 # remember backlight level
-if [[ $(hostname) == "scabeiathrax" ]] then
+if [[ $(hostname) == "scabeiathrax" ]]; then
   light=$(cat /sys/class/backlight/nvidia_backlight/brightness)
 fi
 
@@ -47,7 +47,7 @@ fi
 DISPLAY=:0.0 slock &!
 
 # actual suspend
-if [[ $TIME -gt 0 ]] then
+if [[ $TIME -gt 0 ]]; then
   rtcwake -m mem -s $TIME
 else
   s2ram -f
@@ -56,13 +56,13 @@ fi
 # coming back...
 ################
 
-if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]] then
+if [[ $(hostname) == "nyarlathotep" || $(hostname) == "typhus" ]]; then
   # wlan
   modprobe iwl3945 || exit 1
 fi
 
 # set backlight level
-if [[ $(hostname) == "scabeiathrax" ]] then
+if [[ $(hostname) == "scabeiathrax" ]]; then
   echo $light >! /sys/class/backlight/nvidia_backlight/brightness
 fi
 
