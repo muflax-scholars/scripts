@@ -66,5 +66,10 @@ if [[ $(hostname) == "scabeiathrax" ]]; then
   echo $light >! /sys/class/backlight/nvidia_backlight/brightness
 fi
 
+if [[ $(hostname) == "typhus" ]]; then
+  # keep monitor on
+  dstayon
+fi
+
 # daemons
 sleep 30s && /etc/init.d/fcron start
