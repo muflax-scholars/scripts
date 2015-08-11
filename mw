@@ -13,11 +13,11 @@ options = {
   position: :right,
   speed: 1.0,
 }
-  
+
 # vars
 host    = Socket.gethostname
 display = ":0.0"
-cmd     = ["mplayer"]
+cmd     = ["mpv"]
 pwd     = Dir.pwd
 
 # check if there's a .mw file in the current path and if so, add it as options
@@ -43,7 +43,7 @@ begin
     opts.on("-r", "--right", "play on right screen") do |r|
       options[:position] = :right
     end
-    
+
     opts.on("-x", "--speed SPEED", Float, "increase speed by SPEED") do |s|
       options[:speed] = s
     end
@@ -52,7 +52,7 @@ begin
       options[:subtitle] = s
     end
 
-    
+
     opts.on("-y", "--youtube", "youtube mode") do |y|
       options[:speed] = 1.4
     end
@@ -66,34 +66,34 @@ case host
 when "azathoth"
   # monitor lags a bit
   if options[:position] == :right
-    cmd << "-delay -0.05"
+    cmd << "--audio-delay -0.05"
   end
 
   # screen handling
   case options[:position]
   when :left
-    cmd << "-xineramascreen 0"
+    cmd << "--screen 0"
     system "nvidia-settings -a XVideoSyncToDisplay=DFP-1 >/dev/null"
   when :right
-    cmd << "-xineramascreen 1"
+    cmd << "--screen 1"
     system "nvidia-settings -a XVideoSyncToDisplay=DFP-0 >/dev/null"
   end
 end
 
 # audio filter
-cmd << "-af-add scaletempo"
+cmd << "--af-add scaletempo"
 if options[:volume].nonzero?
-  cmd << "-af-add volume=#{options[:volume]}"
+  cmd << "--af-add volume=#{options[:volume]}"
 end
 
 # speed increase
 if options[:speed] != 1.0
-  cmd << "-speed #{options[:speed]}"
+  cmd << "--speed #{options[:speed]}"
 end
 
 # subtitle
 if options[:subtitle]
-  cmd << "-sub '#{options[:subtitle]}'"
+  cmd << "--sub-file '#{options[:subtitle]}'"
 end
 
 # begin execution
