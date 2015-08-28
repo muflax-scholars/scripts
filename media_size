@@ -39,16 +39,9 @@ class MediaFile
   end
 
   def compute_duration
-    answer = `exiftool -n -s -Duration -PlayDuration #{@path.shell_name}`
-    answer.sub!(" (approx)", "")
+    answer = `ffprobe -v quiet -of csv=p=0 -show_entries format=duration #{@path.shell_name}`
 
-    time = 0
-
-    if m = answer.match(/^ (?:Track|Play)? Duration \s* : \s* (?<time> \d+ (\.\d+)?) \s* $/x)
-      time = m[:time].to_f
-    end
-
-    time
+    answer.to_f
   end
 end
 
