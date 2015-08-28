@@ -7,9 +7,6 @@ require "active_support"
 require "active_support/core_ext/numeric"
 require "trollop"
 
-# avoid rails deprecation warning
-I18n.enforce_available_locales = false
-
 opts = Trollop::options do
   opt :size, "convert to size"
 end
