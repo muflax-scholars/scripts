@@ -17,7 +17,7 @@ end
 to = opts[:size] ? :human_size : :delimited
 
 STDIN.each do |line|
-  new_line = line.gsub(/\d+(\.\d+)?/) do |num|
+  new_line = line.gsub(/\b\d+(\.\d+)?\b/) do |num|
     num = num.include?(".") ? num.to_f : num.to_i
     num.to_s(to)
   end
