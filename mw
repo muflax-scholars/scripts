@@ -7,13 +7,6 @@ require "trollop"
 require "socket"
 require "shellwords"
 
-# defaults
-options = {
-  volume: 0,
-  position: :right,
-  speed: 1.0,
-}
-
 # vars
 host   	= Socket.gethostname
 display	= ":0.0"
@@ -38,6 +31,7 @@ opts = Trollop.options do
   opt :subtitle,	"use subtitle file",	type: :string
 
   opt :annex,	"try to copy over missing files",	default: true
+  opt :quiet,	"be quiet"
 end
 
 position = if opts[:left]
@@ -66,21 +60,12 @@ when "azathoth"
   end
 end
 
-# audio filter
+# player arguments
 cmd << "--af-add scaletempo"
-if options[:volume] != 0
-  cmd << "--af-add volume=#{options[:volume]}"
-end
-
-# speed increase
-if options[:speed] != 1.0
-  cmd << "--speed #{options[:speed]}"
-end
-
-# subtitle
-if options[:subtitle]
-  cmd << "--sub-file '#{options[:subtitle]}'"
-end
+cmd << "--af-add volume=#{opts[:volume]}"	if opts[:volume] != 0
+cmd << "--speed #{opts[:speed]}"         	if opts[:speed] != 1.0
+cmd << "--sub-file '#{opts[:subtitle]}'" 	if opts[:subtitle]
+cmd << "--really-quiet"                  	if opts[:quiet]
 
 # try to copy files over if possible
 if opts[:annex]
@@ -103,5 +88,5 @@ end
 # begin execution
 ENV["DISPLAY"] = display
 mplayer = cmd.join(" ") + " " + Shellwords.shelljoin(ARGV)
-puts "running '#{mplayer}'..."
+puts "running '#{mplayer}'..." unless opts[:quiet]
 system mplayer
