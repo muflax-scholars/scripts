@@ -76,10 +76,10 @@ if opts[:annex]
     # only care about missing files
     next unless File.symlink? file and not File.exists? file
 
-    Dir.chdir File.dirname(file) do
+    Dir.chdir File.realpath(File.dirname(file)) do
       if system "git config --get annex.uuid > /dev/null"
         puts "getting: «#{file}»"
-        system "git-annex", "get", "--from", annex_host, file
+        system "git-annex", "get", "--from", annex_host, File.basename(file)
       end
     end
   end
