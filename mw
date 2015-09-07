@@ -15,13 +15,14 @@ cmd    	= ["mpv"]
 # check if there's a .mw file in the current path and if so, add it as options
 if File.exists? ".mw"
   File.open(".mw", "r").each do |line|
-    ARGV << line.chomp
+    ARGV += line.chomp.split
   end
 end
 
 opts = Trollop.options do
-  opt :volume, 	"increase volume",	default: 0,  	short: :+
-  opt :speed,  	"increase speed", 	default: 1.0,	short: :x
+  opt :volume, 	"increase volume",	default: 0,   	short: :+
+  opt :speed,  	"increase speed", 	default: 1.0, 	short: :x
+  opt :start,  	"skip this much", 	type: :string,	short: :f
   opt :youtube,	"youtube mode"
 
   opt :left, 	"play on left screen"
@@ -65,6 +66,7 @@ cmd << "--af-add scaletempo"
 cmd << "--af-add volume=#{opts[:volume]}"	if opts[:volume] != 0
 cmd << "--speed #{opts[:speed]}"         	if opts[:speed] != 1.0
 cmd << "--sub-file '#{opts[:subtitle]}'" 	if opts[:subtitle]
+cmd << "--start '#{opts[:start]}'"       	if opts[:start]
 cmd << "--really-quiet"                  	if opts[:quiet]
 
 # try to copy files over if possible
