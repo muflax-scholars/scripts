@@ -14,8 +14,8 @@ cmd    	= ["mpv"]
 
 # check if there's a .mw file in the current path and if so, add it as options
 if File.exists? ".mw"
-  File.open(".mw", "r").each do |line|
-    ARGV += line.chomp.split
+  File.open(".mw", "r").map(&:chomp).map(&:split).flatten.each do |arg|
+    ARGV << arg
   end
 end
 
